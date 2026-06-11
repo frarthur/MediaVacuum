@@ -1,7 +1,8 @@
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
-using System.Windows;
 using System.Windows.Input;
+using MediaVacuum.Core;
 using MediaVacuum.Core.Interfaces;
 using MediaVacuum.Core.Models;
 using MediaVacuum.Core.Services;
@@ -15,6 +16,8 @@ public class MainViewModel : INotifyPropertyChanged
     private readonly UpdateService _updateService;
     private readonly ContextMenuManager _contextMenuManager;
     private readonly LocalizationService _l10n;
+    private readonly IDialogService _dialog;
+    private readonly AppConfig _config;
 
     private string _url = string.Empty;
     private string _status;
@@ -22,29 +25,42 @@ public class MainViewModel : INotifyPropertyChanged
     private double _progressValue;
     private bool _isProgressIndeterminate;
     private bool _isDownloading;
-    private string _outputDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\Downloads\\MediaVacuum";
+    private string _outputDirectory;
     private string? _selectedFormat;
     private bool _extractAudio;
     private string? _selectedAudioFormat;
-    private bool _embedMetadata = true;
-    private bool _embedThumbnail = true;
+    private bool _embedMetadata;
+    private bool _embedThumbnail;
     private bool _writeSubtitles;
     private string? _ytDlpVersion;
     private bool _contextMenuInstalled;
 
-    public MainViewModel()
+    public MainViewModel(IDialogService dialog)
     {
+        _dialog = dialog;
+        _config = AppConfig.Load();
+        _outputDirectory = Environment.ExpandEnvironmentVariables(_config.OutputDirectory);
+        _selectedFormat = _config.SelectedFormat;
+        _extractAudio = _config.ExtractAudio;
+        _selectedAudioFormat = _config.SelectedAudioFormat;
+        _embedMetadata = _config.EmbedMetadata;
+        _embedThumbnail = _config.EmbedThumbnail;
+        _writeSubtitles = _config.WriteSubtitles;
+
         var appDir = AppDomain.CurrentDomain.BaseDirectory;
         _ytDlpService = new YtDlpService();
         _updateService = new UpdateService(_ytDlpService.YtDlpPath);
         _contextMenuManager = new ContextMenuManager(System.Reflection.Assembly.GetExecutingAssembly().Location);
         _l10n = LocalizationService.Instance;
+        _l10n.CurrentLanguage = _config.SelectedLanguage;
         _status = _l10n["Ready"];
         T = new Translation();
 
         _l10n.CultureChanged += () =>
         {
             Status = _l10n["Ready"];
+            _config.SelectedLanguage = _l10n.CurrentLanguage;
+            _config.Save();
             OnPropertyChanged(nameof(T));
             T.Reload();
         };
@@ -101,43 +117,85 @@ public class MainViewModel : INotifyPropertyChanged
     public string OutputDirectory
     {
         get => _outputDirectory;
-        set { _outputDirectory = value; OnPropertyChanged(); }
+        set
+        {
+            _outputDirectory = value;
+            _config.OutputDirectory = value;
+            _config.Save();
+            OnPropertyChanged();
+        }
     }
 
     public string? SelectedFormat
     {
         get => _selectedFormat;
-        set { _selectedFormat = value; OnPropertyChanged(); }
+        set
+        {
+            _selectedFormat = value;
+            _config.SelectedFormat = value;
+            _config.Save();
+            OnPropertyChanged();
+        }
     }
 
     public bool ExtractAudio
     {
         get => _extractAudio;
-        set { _extractAudio = value; OnPropertyChanged(); }
+        set
+        {
+            _extractAudio = value;
+            _config.ExtractAudio = value;
+            _config.Save();
+            OnPropertyChanged();
+        }
     }
 
     public string? SelectedAudioFormat
     {
         get => _selectedAudioFormat;
-        set { _selectedAudioFormat = value; OnPropertyChanged(); }
+        set
+        {
+            _selectedAudioFormat = value;
+            _config.SelectedAudioFormat = value;
+            _config.Save();
+            OnPropertyChanged();
+        }
     }
 
     public bool EmbedMetadata
     {
         get => _embedMetadata;
-        set { _embedMetadata = value; OnPropertyChanged(); }
+        set
+        {
+            _embedMetadata = value;
+            _config.EmbedMetadata = value;
+            _config.Save();
+            OnPropertyChanged();
+        }
     }
 
     public bool EmbedThumbnail
     {
         get => _embedThumbnail;
-        set { _embedThumbnail = value; OnPropertyChanged(); }
+        set
+        {
+            _embedThumbnail = value;
+            _config.EmbedThumbnail = value;
+            _config.Save();
+            OnPropertyChanged();
+        }
     }
 
     public bool WriteSubtitles
     {
         get => _writeSubtitles;
-        set { _writeSubtitles = value; OnPropertyChanged(); }
+        set
+        {
+            _writeSubtitles = value;
+            _config.WriteSubtitles = value;
+            _config.Save();
+            OnPropertyChanged();
+        }
     }
 
     public string? YtDlpVersion
@@ -150,6 +208,33 @@ public class MainViewModel : INotifyPropertyChanged
     {
         get => _contextMenuInstalled;
         set { _contextMenuInstalled = value; OnPropertyChanged(); }
+    }
+
+    public bool HasLogo => LogoPath != null;
+    public string? LogoPath
+    {
+        get
+        {
+            if (File.Exists(AppPaths.LogoPath))
+                return AppPaths.LogoPath;
+
+            var appLogo = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "logo_app.png");
+            if (File.Exists(appLogo))
+            {
+                try
+                {
+                    AppPaths.EnsureDataDir();
+                    File.Copy(appLogo, AppPaths.LogoPath, true);
+                    return AppPaths.LogoPath;
+                }
+                catch
+                {
+                    return appLogo;
+                }
+            }
+
+            return null;
+        }
     }
 
     public Translation T { get; }
@@ -298,7 +383,7 @@ public class MainViewModel : INotifyPropertyChanged
             {
                 Status = "Erreur";
                 ProgressText = result.ErrorMessage ?? "Échec du téléchargement";
-                System.Windows.MessageBox.Show(result.ErrorMessage, "Erreur de téléchargement", MessageBoxButton.OK, MessageBoxImage.Error);
+                _dialog.ShowError(result.ErrorMessage ?? "", "Erreur de téléchargement");
             }
         }
         catch (OperationCanceledException)
@@ -310,7 +395,7 @@ public class MainViewModel : INotifyPropertyChanged
         {
             Status = "Erreur";
             ProgressText = ex.Message;
-            System.Windows.MessageBox.Show(ex.Message, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            _dialog.ShowError(ex.Message, "Erreur");
         }
         finally
         {
@@ -326,15 +411,10 @@ public class MainViewModel : INotifyPropertyChanged
 
     private void BrowseOutput()
     {
-        var dialog = new Microsoft.Win32.OpenFolderDialog
+        var folder = _dialog.BrowseFolder(OutputDirectory);
+        if (folder != null)
         {
-            Title = "Choisir le dossier de sortie",
-            InitialDirectory = OutputDirectory
-        };
-
-        if (dialog.ShowDialog() == true)
-        {
-            OutputDirectory = dialog.FolderName;
+            OutputDirectory = folder;
         }
     }
 
@@ -345,31 +425,25 @@ public class MainViewModel : INotifyPropertyChanged
             _contextMenuManager.Install();
             ContextMenuInstalled = true;
             Status = "Menu contextuel installé";
-            System.Windows.MessageBox.Show(
+            _dialog.ShowInfo(
                 "Le menu contextuel 'Download media' a été installé.\n" +
                 "Faites un clic droit dans un dossier → Download media.",
-                "Installation réussie",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+                "Installation réussie");
         }
         catch (System.UnauthorizedAccessException)
         {
-            var result = System.Windows.MessageBox.Show(
+            if (_dialog.ShowConfirm(
                 "L'installation du menu contextuel nécessite les droits administrateur.\n\n" +
                 "Voulez-vous relancer l'application en tant qu'administrateur pour effectuer cette opération ?",
-                "Droits administrateur requis",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+                "Droits administrateur requis"))
             {
                 ContextMenuManager.RestartAsAdmin("--install");
-                System.Windows.Application.Current.Shutdown();
+                _dialog.ExitApp();
             }
         }
         catch (Exception ex)
         {
-            System.Windows.MessageBox.Show($"Erreur lors de l'installation : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            _dialog.ShowError($"Erreur lors de l'installation : {ex.Message}", "Erreur");
         }
     }
 
@@ -380,30 +454,24 @@ public class MainViewModel : INotifyPropertyChanged
             _contextMenuManager.Uninstall();
             ContextMenuInstalled = false;
             Status = "Menu contextuel supprimé";
-            System.Windows.MessageBox.Show(
+            _dialog.ShowInfo(
                 "Le menu contextuel 'Download media' a été supprimé.",
-                "Suppression réussie",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+                "Suppression réussie");
         }
         catch (System.UnauthorizedAccessException)
         {
-            var result = System.Windows.MessageBox.Show(
+            if (_dialog.ShowConfirm(
                 "La suppression du menu contextuel nécessite les droits administrateur.\n\n" +
                 "Voulez-vous relancer l'application en tant qu'administrateur pour effectuer cette opération ?",
-                "Droits administrateur requis",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+                "Droits administrateur requis"))
             {
                 ContextMenuManager.RestartAsAdmin("--uninstall");
-                System.Windows.Application.Current.Shutdown();
+                _dialog.ExitApp();
             }
         }
         catch (Exception ex)
         {
-            System.Windows.MessageBox.Show($"Erreur lors de la suppression : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            _dialog.ShowError($"Erreur lors de la suppression : {ex.Message}", "Erreur");
         }
     }
 
@@ -418,15 +486,11 @@ public class MainViewModel : INotifyPropertyChanged
 
             if (hasUpdate && _updateService.LatestVersion != null)
             {
-                var result = System.Windows.MessageBox.Show(
+                if (_dialog.ShowConfirm(
                     $"Une nouvelle version de yt-dlp est disponible : {_updateService.LatestVersion}\n" +
                     $"Version actuelle : {_updateService.CurrentVersion}\n\n" +
                     "Souhaitez-vous mettre à jour ?",
-                    "Mise à jour disponible",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Information);
-
-                if (result == System.Windows.MessageBoxResult.Yes)
+                    "Mise à jour disponible"))
                 {
                     Status = "Téléchargement de la mise à jour...";
                     await _updateService.UpdateAsync(new Progress<double>(p => ProgressValue = p));
@@ -452,15 +516,11 @@ public class MainViewModel : INotifyPropertyChanged
 
     private void UninstallApp()
     {
-        var result = System.Windows.MessageBox.Show(
+        if (!_dialog.ShowConfirm(
             "Voulez-vous vraiment désinstaller MediaVacuum ?\n\n" +
             "Cette action supprimera le menu contextuel, les fichiers de l'application, " +
             "mais pas vos téléchargements.",
-            "Désinstallation",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Warning);
-
-        if (result != System.Windows.MessageBoxResult.Yes) return;
+            "Désinstallation")) return;
 
         try
         {
@@ -471,17 +531,15 @@ public class MainViewModel : INotifyPropertyChanged
 
             installer.Uninstall();
             Status = "Désinstallation terminée. Vous pouvez fermer l'application.";
-            System.Windows.MessageBox.Show(
+            _dialog.ShowInfo(
                 "MediaVacuum a été désinstallé.\n" +
                 "Le menu contextuel a été supprimé.\n" +
                 "Veuillez fermer l'application manuellement.",
-                "Désinstallation terminée",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+                "Désinstallation terminée");
         }
         catch (Exception ex)
         {
-            System.Windows.MessageBox.Show($"Erreur lors de la désinstallation : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            _dialog.ShowError($"Erreur lors de la désinstallation : {ex.Message}", "Erreur");
         }
     }
 

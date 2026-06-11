@@ -47,7 +47,7 @@ Write-Host ">>> Creating archive: $archiveName ..." -ForegroundColor Yellow
 # Remove old archive if exists
 Remove-Item -LiteralPath $archivePath -Force -ErrorAction SilentlyContinue
 
-Compress-Archive -Path (Join-Path $OutputDir "MediaVacuum.exe") `
+Compress-Archive -Path "$OutputDir\*" `
     -DestinationPath $archivePath
 
 Write-Host ""

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Windows;
+using MediaVacuum.Services;
 using MediaVacuum.ViewModels;
 
 namespace MediaVacuum;
@@ -11,7 +12,7 @@ public partial class MainWindow : Window
         try
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
+            DataContext = new MainViewModel(new DialogService());
         }
         catch (System.Exception ex)
         {

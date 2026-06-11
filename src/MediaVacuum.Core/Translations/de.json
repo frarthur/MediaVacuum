@@ -1,6 +1,6 @@
 {
   "AppTitle": "MediaVacuum",
-  "AppSubtitle": "GUI für yt-dlp",
+  "AppSubtitle": "Video-Downloader für YouTube & mehr",
   "UrlLabel": "URL",
   "UrlTooltip": "URL des Videos oder der Playlist einfügen",
   "Download": "Herunterladen",

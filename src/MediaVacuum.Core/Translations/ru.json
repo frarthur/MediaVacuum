@@ -1,6 +1,6 @@
 {
   "AppTitle": "MediaVacuum",
-  "AppSubtitle": "Графический интерфейс для yt-dlp",
+  "AppSubtitle": "Загрузка видео с YouTube и других сайтов",
   "UrlLabel": "URL",
   "UrlTooltip": "Вставьте URL видео или плейлиста",
   "Download": "Скачать",

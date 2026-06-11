@@ -7,7 +7,6 @@ namespace MediaVacuum.Core.Services;
 public sealed class LocalizationService : INotifyPropertyChanged
 {
     private const string DefaultLanguage = "en";
-    private static readonly string TranslationsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Translations");
     private Dictionary<string, string> _strings = [];
     private string _currentLanguage = DefaultLanguage;
 
@@ -28,18 +27,52 @@ public sealed class LocalizationService : INotifyPropertyChanged
 
     private LocalizationService()
     {
+        EnsureTranslationsReady();
         LoadLanguage(DefaultLanguage);
     }
 
     public string T(string key) => this[key];
 
+    private static void EnsureTranslationsReady()
+    {
+        var appDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Translations");
+        var dataDir = AppPaths.TranslationsDir;
+
+        if (Directory.Exists(appDir))
+        {
+            AppPaths.EnsureTranslationsDir();
+            foreach (var file in Directory.GetFiles(appDir, "*.json"))
+            {
+                var dest = Path.Combine(dataDir, Path.GetFileName(file));
+                if (!File.Exists(dest))
+                {
+                    try { File.Copy(file, dest); }
+                    catch { }
+                }
+            }
+        }
+    }
+
+    private string ResolveTranslationPath(string lang)
+    {
+        var dataPath = Path.Combine(AppPaths.TranslationsDir, $"{lang}.json");
+        if (File.Exists(dataPath))
+            return dataPath;
+
+        var appPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Translations", $"{lang}.json");
+        if (File.Exists(appPath))
+            return appPath;
+
+        return Path.Combine(AppPaths.TranslationsDir, $"{DefaultLanguage}.json");
+    }
+
     private void LoadLanguage(string lang)
     {
-        var filePath = Path.Combine(TranslationsDir, $"{lang}.json");
+        var filePath = ResolveTranslationPath(lang);
 
         if (!File.Exists(filePath))
         {
-            filePath = Path.Combine(TranslationsDir, $"{DefaultLanguage}.json");
+            filePath = ResolveTranslationPath(DefaultLanguage);
         }
 
         if (File.Exists(filePath))
