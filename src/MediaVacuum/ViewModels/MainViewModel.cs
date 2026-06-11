@@ -14,9 +14,10 @@ public class MainViewModel : INotifyPropertyChanged
     private readonly IYtDlpService _ytDlpService;
     private readonly UpdateService _updateService;
     private readonly ContextMenuManager _contextMenuManager;
+    private readonly LocalizationService _l10n;
 
     private string _url = string.Empty;
-    private string _status = "Prêt";
+    private string _status;
     private string _progressText = string.Empty;
     private double _progressValue;
     private bool _isProgressIndeterminate;
@@ -37,6 +38,16 @@ public class MainViewModel : INotifyPropertyChanged
         _ytDlpService = new YtDlpService();
         _updateService = new UpdateService(_ytDlpService.YtDlpPath);
         _contextMenuManager = new ContextMenuManager(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        _l10n = LocalizationService.Instance;
+        _status = _l10n["Ready"];
+        T = new Translation();
+
+        _l10n.CultureChanged += () =>
+        {
+            Status = _l10n["Ready"];
+            OnPropertyChanged(nameof(T));
+            T.Reload();
+        };
 
         StartDownloadCommand = new AsyncRelayCommand(StartDownloadAsync, _ => CanStartDownload);
         BrowseOutputCommand = new RelayCommand(_ => BrowseOutput());
@@ -44,6 +55,7 @@ public class MainViewModel : INotifyPropertyChanged
         UninstallContextMenuCommand = new RelayCommand(_ => UninstallContextMenu());
         CheckUpdateCommand = new AsyncRelayCommand(_ => CheckUpdateAsync());
         UninstallAppCommand = new RelayCommand(_ => UninstallApp());
+        ChangeLanguageCommand = new RelayCommand(ChangeLanguage);
 
         _ = InitializeAsync();
     }
@@ -140,16 +152,38 @@ public class MainViewModel : INotifyPropertyChanged
         set { _contextMenuInstalled = value; OnPropertyChanged(); }
     }
 
+    public Translation T { get; }
     public ICommand StartDownloadCommand { get; }
     public ICommand BrowseOutputCommand { get; }
     public ICommand InstallContextMenuCommand { get; }
     public ICommand UninstallContextMenuCommand { get; }
     public ICommand CheckUpdateCommand { get; }
     public ICommand UninstallAppCommand { get; }
+    public ICommand ChangeLanguageCommand { get; }
+
+    public string[] AvailableLanguages { get; } = ["en", "fr", "es", "ru", "de"];
+
+    public string SelectedLanguage
+    {
+        get => _l10n.CurrentLanguage;
+        set
+        {
+            if (value != null) _l10n.CurrentLanguage = value;
+            OnPropertyChanged();
+        }
+    }
 
     public string[] FormatPresets { get; } = ["best", "bestvideo+bestaudio", "bestvideo", "bestaudio", "worst", "2160p", "1440p", "1080p", "720p", "480p", "360p"];
 
     public string[] AudioFormats { get; } = ["mp3", "aac", "flac", "opus", "vorbis", "m4a", "wav"];
+
+    private void ChangeLanguage(object? parameter)
+    {
+        if (parameter is string lang)
+        {
+            SelectedLanguage = lang;
+        }
+    }
 
     private async Task InitializeAsync()
     {

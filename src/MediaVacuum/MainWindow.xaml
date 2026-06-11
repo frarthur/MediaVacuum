@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Drop="OnUrlDrop"
         AllowDrop="True"
-        Title="MediaVacuum"
+        Title="{Binding T.AppTitle}"
         Height="650" Width="780"
         MinHeight="500" MinWidth="600"
         WindowStartupLocation="CenterScreen"
@@ -47,13 +47,15 @@
             </Border>
 
             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock Text="MediaVacuum" FontSize="22" FontWeight="Bold" />
-                <TextBlock Text="Interface graphique pour yt-dlp" FontSize="12"
+                <TextBlock Text="{Binding T.AppTitle}" FontSize="22" FontWeight="Bold" />
+                <TextBlock Text="{Binding T.AppSubtitle}" FontSize="12"
                            Foreground="{StaticResource TextSecondaryBrush}" />
             </StackPanel>
 
             <StackPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Horizontal">
-                <TextBlock Text="yt-dlp : " FontSize="12" VerticalAlignment="Center"
+                <TextBlock Text="{Binding T.YtDlpVersion}" FontSize="12" VerticalAlignment="Center"
+                           Foreground="{StaticResource TextSecondaryBrush}" />
+                <TextBlock Text=" : " FontSize="12" VerticalAlignment="Center"
                            Foreground="{StaticResource TextSecondaryBrush}" />
                 <TextBlock Text="{Binding YtDlpVersion}" FontSize="12" VerticalAlignment="Center"
                            Foreground="{StaticResource PrimaryBrush}" FontWeight="SemiBold" />
@@ -64,7 +66,7 @@
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <!-- URL Input -->
-                <GroupBox Header="URL">
+                <GroupBox Header="{Binding T.UrlLabel}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -74,10 +76,10 @@
                         <TextBox Grid.Column="0"
                                  Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"
                                  AllowDrop="True"
-                                 ToolTip="Collez l'URL de la vidéo ou du playlist à télécharger" />
+                                 ToolTip="{Binding T.UrlTooltip}" />
 
                         <Button Grid.Column="1"
-                                Content="Télécharger"
+                                Content="{Binding T.Download}"
                                 Command="{Binding StartDownloadCommand}"
                                 Style="{StaticResource PrimaryButton}"
                                 Margin="8,0,0,0"
@@ -85,8 +87,8 @@
                     </Grid>
                 </GroupBox>
 
-                <!-- Options de téléchargement -->
-                <GroupBox Header="Options">
+                <!-- Options -->
+                <GroupBox Header="{Binding T.Options}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -94,47 +96,52 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                            <TextBlock Text="Dossier de sortie" Style="{StaticResource Label}" />
+                            <TextBlock Text="{Binding T.OutputFolder}" Style="{StaticResource Label}" />
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBox Grid.Column="0" Text="{Binding OutputDirectory}" />
-                                <Button Grid.Column="1" Content="..."
+                                <Button Grid.Column="1" Content="{Binding T.Browse}"
                                         Command="{Binding BrowseOutputCommand}"
                                         Style="{StaticResource SecondaryButton}"
                                         Margin="4,0,0,0"
                                         Width="36" Padding="4" />
                             </Grid>
 
-                            <TextBlock Text="Format vidéo" Style="{StaticResource Label}" Margin="0,12,0,0" />
+                            <TextBlock Text="{Binding T.VideoFormat}" Style="{StaticResource Label}" Margin="0,12,0,0" />
                             <ComboBox SelectedItem="{Binding SelectedFormat}"
                                       ItemsSource="{Binding FormatPresets}"
                                       IsEditable="True" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                            <CheckBox Content="Extraire l'audio" IsChecked="{Binding ExtractAudio}" />
+                            <CheckBox Content="{Binding T.ExtractAudio}" IsChecked="{Binding ExtractAudio}" />
                             <ComboBox SelectedItem="{Binding SelectedAudioFormat}"
                                       ItemsSource="{Binding AudioFormats}"
                                       IsEnabled="{Binding ExtractAudio}"
                                       Margin="24,4,0,8" />
 
-                            <CheckBox Content="Ajouter les métadonnées" IsChecked="{Binding EmbedMetadata}" />
-                            <CheckBox Content="Ajouter la miniature" IsChecked="{Binding EmbedThumbnail}" Margin="0,4,0,0" />
-                            <CheckBox Content="Télécharger les sous-titres" IsChecked="{Binding WriteSubtitles}" Margin="0,4,0,0" />
+                            <CheckBox Content="{Binding T.EmbedMetadata}" IsChecked="{Binding EmbedMetadata}" />
+                            <CheckBox Content="{Binding T.EmbedThumbnail}" IsChecked="{Binding EmbedThumbnail}" Margin="0,4,0,0" />
+                            <CheckBox Content="{Binding T.DownloadSubtitles}" IsChecked="{Binding WriteSubtitles}" Margin="0,4,0,0" />
+
+                            <!-- Language selector -->
+                            <TextBlock Text="{Binding T.Language}" Style="{StaticResource Label}" Margin="0,12,0,0" />
+                            <ComboBox SelectedItem="{Binding SelectedLanguage}"
+                                      ItemsSource="{Binding AvailableLanguages}"
+                                      Margin="0,0,0,4" />
                         </StackPanel>
                     </Grid>
                 </GroupBox>
 
-                <!-- Progression -->
-                <GroupBox Header="Progression" Visibility="{Binding IsDownloading, Converter={x:Static conv:BooleanToVisibilityConverter.Instance}}">
+                <!-- Progress -->
+                <GroupBox Header="{Binding T.Progress}" Visibility="{Binding IsDownloading, Converter={x:Static conv:BooleanToVisibilityConverter.Instance}}">
                     <StackPanel>
                         <ProgressBar Value="{Binding ProgressValue}"
                                      IsIndeterminate="{Binding IsProgressIndeterminate}"
-                                     Maximum="100"
-                                     Visibility="{Binding IsDownloading, Converter={x:Static conv:BooleanToVisibilityConverter.Instance}}" />
+                                     Maximum="100" />
                         <Grid Margin="0,8,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -152,7 +159,7 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- Footer / Status Bar -->
+        <!-- Footer -->
         <Border Grid.Row="2" Margin="0,12,0,0" Padding="8,0" CornerRadius="4"
                 Background="{StaticResource SurfaceBrush}">
             <Grid>
@@ -167,28 +174,28 @@
                            FontSize="12" />
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button Content="Vérifier màj"
+                    <Button Content="{Binding T.CheckUpdate}"
                             Command="{Binding CheckUpdateCommand}"
                             Style="{StaticResource SecondaryButton}"
                             Margin="4,0"
                             Height="28" Padding="8,4"
                             FontSize="11" />
 
-                    <Button Content="Installer menu"
+                    <Button Content="{Binding T.InstallMenu}"
                             Command="{Binding InstallContextMenuCommand}"
                             Style="{StaticResource SecondaryButton}"
                             Margin="4,0"
                             Height="28" Padding="8,4"
                             FontSize="11" />
 
-                    <Button Content="Supprimer menu"
+                    <Button Content="{Binding T.RemoveMenu}"
                             Command="{Binding UninstallContextMenuCommand}"
                             Style="{StaticResource SecondaryButton}"
                             Margin="4,0"
                             Height="28" Padding="8,4"
                             FontSize="11" />
 
-                    <Button Content="Désinstaller"
+                    <Button Content="{Binding T.Uninstall}"
                             Command="{Binding UninstallAppCommand}"
                             Style="{StaticResource DangerButton}"
                             Margin="4,0,0,0"
