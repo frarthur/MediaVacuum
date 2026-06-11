@@ -7,7 +7,7 @@
     <Authors>MediaVacuum</Authors>
     <Description>GUI wrapper for yt-dlp – download videos and audio from YouTube and hundreds of sites.</Description>
     <Copyright>Copyright (c) 2026 MediaVacuum. yt-dlp is licensed under the Unlicense.</Copyright>
-    <RepositoryUrl>https://github.com/MediaVacuum/MediaVacuum</RepositoryUrl>
+    <RepositoryUrl>https://github.com/frarthur/MediaVacuum</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 </Project>

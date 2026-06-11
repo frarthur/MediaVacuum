@@ -4,8 +4,8 @@
 
 **A modern Windows GUI for [yt-dlp](https://github.com/yt-dlp/yt-dlp)**
 
-[![Windows x64](https://img.shields.io/badge/Download-Windows_x64-blue?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/MediaVacuum/MediaVacuum/releases/latest)
-[![Version](https://img.shields.io/github/v/release/MediaVacuum/MediaVacuum?color=brightgreen&style=for-the-badge&label=Latest)](https://github.com/MediaVacuum/MediaVacuum/releases)
+[![Windows x64](https://img.shields.io/badge/Download-Windows_x64-blue?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/frarthur/MediaVacuum/releases/latest)
+[![Version](https://img.shields.io/github/v/release/frarthur/MediaVacuum?color=brightgreen&style=for-the-badge&label=Latest)](https://github.com/frarthur/MediaVacuum/releases)
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
@@ -34,7 +34,7 @@ It automatically downloads and manages `yt-dlp.exe` on first launch, integrates 
 
 ## Quick Start
 
-1. Download the latest `MediaVacuum.exe` from [Releases](https://github.com/MediaVacuum/MediaVacuum/releases/latest)
+1. Download the latest `MediaVacuum.exe` from [Releases](https://github.com/frarthur/MediaVacuum/releases/latest)
 2. Run it — yt-dlp is downloaded automatically on first launch
 3. Paste a URL and click **Download**
 
@@ -54,14 +54,14 @@ It automatically downloads and manages `yt-dlp.exe` on first launch, integrates 
 
 ```powershell
 # Download and run
-curl -L https://github.com/MediaVacuum/MediaVacuum/releases/latest/download/MediaVacuum.exe -o MediaVacuum.exe
+curl -L https://github.com/frarthur/MediaVacuum/releases/latest/download/MediaVacuum.exe -o MediaVacuum.exe
 .\MediaVacuum.exe
 ```
 
 ### From source
 
 ```powershell
-git clone https://github.com/MediaVacuum/MediaVacuum.git
+git clone https://github.com/frarthur/MediaVacuum.git
 cd MediaVacuum
 dotnet run --project src/MediaVacuum
 ```

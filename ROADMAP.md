@@ -120,7 +120,7 @@ gh release create v0.1.0 --title "v0.1.0" --notes "Release notes..." ./publish/M
 
 `publish.ps1` produit un `.exe` self-contained dans `./publish/` et une archive `.zip` à la racine.
 
-L'application peut vérifier sa version via l'API GitHub Releases (`/repos/MediaVacuum/MediaVacuum/releases/latest`) pour implémenter l'auto-update.
+L'application peut vérifier sa version via l'API GitHub Releases (`/repos/frarthur/MediaVacuum/releases/latest`) pour implémenter l'auto-update.
 
 ---
 
