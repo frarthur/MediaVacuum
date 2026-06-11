@@ -82,6 +82,18 @@ public class UpdateService
         File.Move(_targetPath + ".tmp", _targetPath);
     }
 
+    public bool Exists()
+    {
+        return File.Exists(_targetPath);
+    }
+
+    public async Task EnsureDownloadedAsync(IProgress<double>? progress = null, CancellationToken ct = default)
+    {
+        if (File.Exists(_targetPath)) return;
+
+        await UpdateAsync(progress, ct);
+    }
+
     public async Task UpdateYtDlpSelfAsync()
     {
         var startInfo = new ProcessStartInfo

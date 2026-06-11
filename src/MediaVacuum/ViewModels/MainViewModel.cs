@@ -153,6 +153,35 @@ public class MainViewModel : INotifyPropertyChanged
 
     private async Task InitializeAsync()
     {
+        if (!_updateService.Exists())
+        {
+            Status = "Téléchargement de yt-dlp...";
+            IsProgressIndeterminate = true;
+
+            try
+            {
+                var dlProgress = new Progress<double>(p =>
+                {
+                    IsProgressIndeterminate = false;
+                    ProgressValue = p;
+                    ProgressText = $"{p:F0}%";
+                });
+
+                await _updateService.EnsureDownloadedAsync(dlProgress);
+                Status = "yt-dlp téléchargé";
+            }
+            catch (Exception ex)
+            {
+                Status = "Échec du téléchargement de yt-dlp";
+                ProgressText = ex.Message;
+                ProgressValue = 0;
+            }
+            finally
+            {
+                IsProgressIndeterminate = false;
+            }
+        }
+
         try
         {
             YtDlpVersion = await _ytDlpService.GetVersionAsync();
