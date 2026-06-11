@@ -7,6 +7,18 @@ public partial class App : System.Windows.Application
 {
     protected override void OnStartup(StartupEventArgs e)
     {
+        AppDomain.CurrentDomain.UnhandledException += (_, args) =>
+        {
+            MessageBox.Show($"Fatal error: {args.ExceptionObject}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        };
+
+        DispatcherUnhandledException += (_, args) =>
+        {
+            var ex = args.Exception.InnerException ?? args.Exception;
+            MessageBox.Show($"Dispatcher error:\n{ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            args.Handled = true;
+        };
+
         if (e.Args.Length > 0)
         {
             HandleCommandLine(e.Args);

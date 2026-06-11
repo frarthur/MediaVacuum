@@ -7,7 +7,7 @@ namespace MediaVacuum.Core.Services;
 public sealed class LocalizationService : INotifyPropertyChanged
 {
     private const string DefaultLanguage = "en";
-    private static readonly string TranslationsDir;
+    private static readonly string TranslationsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Translations");
     private Dictionary<string, string> _strings = [];
     private string _currentLanguage = DefaultLanguage;
 
@@ -25,11 +25,6 @@ public sealed class LocalizationService : INotifyPropertyChanged
     }
 
     public string this[string key] => _strings.TryGetValue(key, out var value) ? value : key;
-
-    static LocalizationService()
-    {
-        TranslationsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Translations");
-    }
 
     private LocalizationService()
     {
