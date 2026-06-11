@@ -44,7 +44,6 @@ public class InstallerService
     {
         var contextMenu = new ContextMenuManager(_appExePath);
         contextMenu.Uninstall();
-        contextMenu.UninstallPerUser();
 
         TryDeleteFiles();
         TryDeleteDirectory();

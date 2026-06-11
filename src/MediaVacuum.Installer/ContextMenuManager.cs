@@ -1,11 +1,13 @@
+using System.Security.Principal;
+using System.Diagnostics;
 using Microsoft.Win32;
 
 namespace MediaVacuum.Installer;
 
 public class ContextMenuManager
 {
-    private const string RegistryKeyPath = @"Directory\Background\shell\MediaVacuum";
-    private const string CommandKeyPath = @"Directory\Background\shell\MediaVacuum\command";
+    private const string KeyPath = @"Software\Classes\Directory\Background\shell\MediaVacuum";
+    private const string CommandKeyPath = @"Software\Classes\Directory\Background\shell\MediaVacuum\command";
 
     private readonly string _appPath;
 
@@ -14,48 +16,45 @@ public class ContextMenuManager
         _appPath = appPath;
     }
 
+    public static bool IsElevated
+    {
+        get
+        {
+            using var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+    }
+
+    public static void RestartAsAdmin(string? args = null)
+    {
+        var processInfo = new ProcessStartInfo
+        {
+            FileName = Environment.ProcessPath!,
+            UseShellExecute = true,
+            Verb = "runas"
+        };
+
+        if (!string.IsNullOrEmpty(args))
+        {
+            processInfo.Arguments = args;
+        }
+
+        Process.Start(processInfo);
+    }
+
     public bool IsInstalled
     {
         get
         {
-            using var key = Registry.ClassesRoot.OpenSubKey(RegistryKeyPath);
+            using var key = Registry.CurrentUser.OpenSubKey(CommandKeyPath);
             return key != null;
         }
     }
 
     public void Install()
     {
-        using var shellKey = Registry.ClassesRoot.CreateSubKey(RegistryKeyPath);
-        shellKey.SetValue("MUIVerb", "Download media");
-        shellKey.SetValue("Icon", _appPath);
-        shellKey.SetValue("ExtendedSubCommandsKey", "");
-
-        using var commandKey = Registry.ClassesRoot.CreateSubKey(CommandKeyPath);
-        commandKey.SetValue("", $"\"{_appPath}\" \"%V\"");
-    }
-
-    public void Uninstall()
-    {
-        try
-        {
-            Registry.ClassesRoot.DeleteSubKeyTree(CommandKeyPath, false);
-        }
-        catch
-        {
-        }
-
-        try
-        {
-            Registry.ClassesRoot.DeleteSubKeyTree(RegistryKeyPath, false);
-        }
-        catch
-        {
-        }
-    }
-
-    public void InstallPerUser()
-    {
-        using var shellKey = Registry.CurrentUser.CreateSubKey(RegistryKeyPath);
+        using var shellKey = Registry.CurrentUser.CreateSubKey(KeyPath);
         shellKey.SetValue("MUIVerb", "Download media");
         shellKey.SetValue("Icon", _appPath);
 
@@ -63,7 +62,7 @@ public class ContextMenuManager
         commandKey.SetValue("", $"\"{_appPath}\" \"%V\"");
     }
 
-    public void UninstallPerUser()
+    public void Uninstall()
     {
         try
         {
@@ -75,7 +74,7 @@ public class ContextMenuManager
 
         try
         {
-            Registry.CurrentUser.DeleteSubKeyTree(RegistryKeyPath, false);
+            Registry.CurrentUser.DeleteSubKeyTree(KeyPath, false);
         }
         catch
         {

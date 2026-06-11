@@ -311,6 +311,27 @@ public class MainViewModel : INotifyPropertyChanged
             _contextMenuManager.Install();
             ContextMenuInstalled = true;
             Status = "Menu contextuel installé";
+            System.Windows.MessageBox.Show(
+                "Le menu contextuel 'Download media' a été installé.\n" +
+                "Faites un clic droit dans un dossier → Download media.",
+                "Installation réussie",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (System.UnauthorizedAccessException)
+        {
+            var result = System.Windows.MessageBox.Show(
+                "L'installation du menu contextuel nécessite les droits administrateur.\n\n" +
+                "Voulez-vous relancer l'application en tant qu'administrateur pour effectuer cette opération ?",
+                "Droits administrateur requis",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                ContextMenuManager.RestartAsAdmin("--install");
+                System.Windows.Application.Current.Shutdown();
+            }
         }
         catch (Exception ex)
         {
@@ -323,9 +344,28 @@ public class MainViewModel : INotifyPropertyChanged
         try
         {
             _contextMenuManager.Uninstall();
-            _contextMenuManager.UninstallPerUser();
             ContextMenuInstalled = false;
             Status = "Menu contextuel supprimé";
+            System.Windows.MessageBox.Show(
+                "Le menu contextuel 'Download media' a été supprimé.",
+                "Suppression réussie",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (System.UnauthorizedAccessException)
+        {
+            var result = System.Windows.MessageBox.Show(
+                "La suppression du menu contextuel nécessite les droits administrateur.\n\n" +
+                "Voulez-vous relancer l'application en tant qu'administrateur pour effectuer cette opération ?",
+                "Droits administrateur requis",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                ContextMenuManager.RestartAsAdmin("--uninstall");
+                System.Windows.Application.Current.Shutdown();
+            }
         }
         catch (Exception ex)
         {
