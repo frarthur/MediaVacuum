@@ -50,7 +50,7 @@ public class MainViewModel : INotifyPropertyChanged
         var appDir = AppDomain.CurrentDomain.BaseDirectory;
         _ytDlpService = new YtDlpService();
         _updateService = new UpdateService(_ytDlpService.YtDlpPath);
-        _contextMenuManager = new ContextMenuManager(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        _contextMenuManager = new ContextMenuManager(Environment.ProcessPath!);
         _l10n = LocalizationService.Instance;
         _l10n.CurrentLanguage = _config.SelectedLanguage;
         _status = _l10n["Ready"];
@@ -525,8 +525,8 @@ public class MainViewModel : INotifyPropertyChanged
         try
         {
             var installer = new InstallerService(
-                System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)!,
-                System.Reflection.Assembly.GetExecutingAssembly().Location,
+                Path.GetDirectoryName(Environment.ProcessPath!)!,
+                Environment.ProcessPath!,
                 _ytDlpService.YtDlpPath);
 
             installer.Uninstall();

@@ -31,7 +31,7 @@ public partial class App : System.Windows.Application
 
     private static void HandleCommandLine(string[] args)
     {
-        var appPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        var appPath = Environment.ProcessPath!;
         var manager = new ContextMenuManager(appPath);
 
         foreach (var arg in args)
