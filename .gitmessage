@@ -1,0 +1,15 @@
+# <type>(<scope>): <subject>
+# │          │          │
+# │          │          └─ ● Description courte (impératif, pas de majuscule, pas de point final)
+# │          │
+# │          └─ ● Optionnel : fichier ou module concerné (api, questionnaire, contact, seo, etc.)
+# │
+# └─ ● Type: feat | fix | refactor | style | test | docs | chore | perf
+#
+# Exemples:
+#   feat(api): add questionnaire validation endpoint
+#   fix(questionnaire): handle empty email field
+#   refactor(contact): extract email service
+#   style(header): fix mobile spacing
+#
+# Ligne 50 caractères max pour le sujet, sauter une ligne avant le corps si besoin.
