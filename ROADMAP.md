@@ -106,6 +106,24 @@ Exemples :
 
 ---
 
+## Release Workflow
+
+Chaque version stable est taguée (`v0.1.0`, `v0.2.0`, etc.) et distribuée via **GitHub Releases**.
+
+```powershell
+# 1. Build single-file .exe
+.\publish.ps1
+
+# 2. Créer la release GitHub (nécessite gh CLI)
+gh release create v0.1.0 --title "v0.1.0" --notes "Release notes..." ./publish/MediaVacuum.exe
+```
+
+`publish.ps1` produit un `.exe` self-contained dans `./publish/` et une archive `.zip` à la racine.
+
+L'application peut vérifier sa version via l'API GitHub Releases (`/repos/MediaVacuum/MediaVacuum/releases/latest`) pour implémenter l'auto-update.
+
+---
+
 ## Crédits
 
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) — le moteur de téléchargement sous-jacent

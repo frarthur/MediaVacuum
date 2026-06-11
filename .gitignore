@@ -31,3 +31,5 @@ Thumbs.db
 # Project specific
 /inspi/
 yt-dlp/*.exe
+src/MediaVacuum/Translations/
+publish/
