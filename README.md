@@ -13,6 +13,12 @@
 
 ---
 
+**Personal message :**
+
+I built this project because I was tired of opening a terminal every time I wanted to use yt-dlp. I wanted something lightweight, native to Windows, and easy enough that anyone could use it without learning command-line arguments.
+
+---
+
 MediaVacuum is a **Windows desktop application** that wraps [yt-dlp](https://github.com/yt-dlp/yt-dlp) — the powerful command-line media downloader supporting thousands of sites — into a clean, intuitive graphical interface. No terminal knowledge required.
 
 It automatically downloads and manages `yt-dlp.exe` on first launch, integrates with Windows Explorer via a right-click context menu, and supports 5 languages.
