@@ -28,7 +28,7 @@ It automatically downloads and manages `yt-dlp.exe` on first launch, integrates 
 ## Features
 
 - **🎯 Paste & Download** — Drop a URL and download in one click
-- **📁 Right-click context menu** — Right-click any folder → *Download media*
+- **📁 Right-click context menu** — Right-click any folder → _Download media_
 - **🎬 Format selection** — Best, bestvideo+bestaudio, bestvideo, bestaudio, worst
 - **🎵 Audio extraction** — Convert to MP3, M4A, OPUS, FLAC, WAV
 - **🏷️ Metadata embedding** — Embed thumbnails, metadata, and subtitles
@@ -50,7 +50,7 @@ It automatically downloads and manages `yt-dlp.exe` on first launch, integrates 
 
 ## Screenshots
 
-*Coming soon.*
+![screenshot](IMAGES/app_screen.png)
 
 ---
 
@@ -95,13 +95,13 @@ The script produces `publish/MediaVacuum.exe` (win-x64, self-contained).
 
 ## Languages
 
-| Flag | Code | Language | File |
-|------|------|----------|------|
-| 🇬🇧 | `en` | English | [en.json](src/MediaVacuum.Core/Translations/en.json) |
-| 🇪🇸 | `es` | Spanish | [es.json](src/MediaVacuum.Core/Translations/es.json) |
-| 🇫🇷 | `fr` | French | [fr.json](src/MediaVacuum.Core/Translations/fr.json) |
-| 🇩🇪 | `de` | German | [de.json](src/MediaVacuum.Core/Translations/de.json) |
-| 🇷🇺 | `ru` | Russian | [ru.json](src/MediaVacuum.Core/Translations/ru.json) |
+| Flag | Code | Language | File                                                 |
+| ---- | ---- | -------- | ---------------------------------------------------- |
+| 🇬🇧   | `en` | English  | [en.json](src/MediaVacuum.Core/Translations/en.json) |
+| 🇪🇸   | `es` | Spanish  | [es.json](src/MediaVacuum.Core/Translations/es.json) |
+| 🇫🇷   | `fr` | French   | [fr.json](src/MediaVacuum.Core/Translations/fr.json) |
+| 🇩🇪   | `de` | German   | [de.json](src/MediaVacuum.Core/Translations/de.json) |
+| 🇷🇺   | `ru` | Russian  | [ru.json](src/MediaVacuum.Core/Translations/ru.json) |
 
 ---
 
