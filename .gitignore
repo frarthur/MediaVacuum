@@ -1,38 +1,65 @@
-# Build results
-bin/
-obj/
+# ─── Private local files ───────────────────────────────────────────
+*.local.md
+
+# ─── Environment ────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── Dependencies ───────────────────────────────────────────────────
+node_modules/
+vendor/
+.pnpm-store/
+
+# ─── Build / Output ─────────────────────────────────────────────────
+dist/
+build/
+out/
 *.exe
 *.dll
+*.so
+*.dylib
+bin/
+obj/
 *.pdb
 *.user
 *.suo
 *.cache
-*.log
 *.tmp
+*.zip
 
-# IDE
+# ─── IDE / Editor ───────────────────────────────────────────────────
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
 .vs/
 *.sln.docstates
 *.userprefs
 .idea/
-*.swp
-*~
 
-# Dotnet
+# ─── OS ─────────────────────────────────────────────────────────────
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# ─── Logs ───────────────────────────────────────────────────────────
+*.log
+logs/
+
+
+
+
+# ─── Dotnet ───────────────────────────────────────────────────────────
 packages/
 *.nupkg
 **/[Rr]elease/
 **/[Dd]ebug/
 
-# OS
-Thumbs.db
-.DS_Store
-
-# Project specific
+# ─── Project specific ───────────────────────────────────────────────────────────
 /inspi/
 yt-dlp/*.exe
 src/MediaVacuum/Translations/
 publish/
-
-# Build
-*.zip
